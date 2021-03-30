@@ -27,16 +27,21 @@ const Repos: React.FC = () => {
   return (
     <div className="border-2 h-screen flex justify-center">
       <div className="mt-20">
-        <h1>Search an npm registry package</h1>
-        <div>
+        <h1 className="text-2xl mb-5">Search an npm registry package</h1>
+        <div className="text-2xl mb-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <input
               type="text"
-              className="border-2 border-blue-600 rounded"
+              className="border-2 border-blue-600 rounded mr-5 px-3"
               name="search_term"
               ref={register}
             />
-            <button type="submit">Search</button>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white rounded p-1"
+            >
+              Search
+            </button>
           </form>
           {errors.search_term && (
             <small className="text-red-500">{errors.search_term.message}</small>
