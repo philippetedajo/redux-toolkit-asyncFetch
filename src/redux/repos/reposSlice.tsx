@@ -14,11 +14,25 @@ const initialState: ReposState = {
   data: [],
 };
 
-export const getRepos = createAsyncThunk("repos/getRepos", async () => {
-  return await fetch(
-    "https://jsonplaceholder.typicode.com/posts"
-  ).then((data) => data.json());
-});
+export const getRepos = createAsyncThunk(
+  "repos/getRepos",
+  async (term: string) => {
+    try {
+      const { data } = await axios.get(
+        "http://registry.npmjs.org/-/v1/search",
+        {
+          params: {
+            text: term,
+          },
+        }
+      );
+
+      return data.objects.map((repo: any) => repo.package);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 export const reposSlice = createSlice({
   name: "repos",
