@@ -5,7 +5,7 @@ import axios from "axios";
 interface ReposState {
   loading: boolean;
   error: string | null | unknown;
-  data: string[];
+  data: any;
 }
 
 const initialState: ReposState = {
@@ -29,7 +29,7 @@ export const getRepos = createAsyncThunk(
 
       return data.objects.map((repo: any) => repo.package);
     } catch (error) {
-      console.log(error);
+      return error.message;
     }
   }
 );
@@ -57,6 +57,6 @@ export const reposSlice = createSlice({
   },
 });
 
-export const selectRepos = (state: RootState) => state;
+export const selectRepos = (state: RootState) => state.repos;
 
 export default reposSlice.reducer;

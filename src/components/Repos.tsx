@@ -1,5 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { npmSchema } from "../utils/validationSchemas";
 import { useAppSelector, useAppDispatch } from "../redux/hook";
 import { getRepos, selectRepos } from "../redux/repos/reposSlice";
 
@@ -7,29 +9,43 @@ interface NpmForm {
   search_term: string;
 }
 
-const Repos = () => {
-  const state = useAppSelector(selectRepos);
+const Repos: React.FC = () => {
+  const { data, loading, error } = useAppSelector(selectRepos);
   const dispatch = useAppDispatch();
 
-  const { register, handleSubmit, errors } = useForm<NpmForm>();
+  const { register, handleSubmit, errors } = useForm<NpmForm>({
+    resolver: yupResolver(npmSchema),
+  });
   const onSubmit = ({ search_term }: NpmForm) => {
     dispatch(getRepos(search_term));
   };
 
-  console.log(state);
+  const list = data.map((repo: any, index: number) => (
+    <li key={index}>{repo.name} </li>
+  ));
+
   return (
     <div className="border-2 h-screen flex justify-center">
       <div className="mt-20">
         <h1>Search an npm registry package</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            type="text"
-            className="border-2 border-blue-600 rounded"
-            name="search_term"
-            ref={register}
-          />
-          <button type="submit">Search</button>
-        </form>
+        <div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              type="text"
+              className="border-2 border-blue-600 rounded"
+              name="search_term"
+              ref={register}
+            />
+            <button type="submit">Search</button>
+          </form>
+          {errors.search_term && (
+            <small className="text-red-500">{errors.search_term.message}</small>
+          )}
+        </div>
+
+        {loading && <div>Loading...</div>}
+        {data && <div> {list} </div>}
+        {error && console.log(error)}
       </div>
     </div>
   );
