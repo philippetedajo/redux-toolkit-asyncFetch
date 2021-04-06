@@ -26,7 +26,7 @@ export const getRepos = createAsyncThunk(
           },
         }
       );
-
+      // console.log(data.objects.map((repo: any) => repo.package));
       return data.objects.map((repo: any) => repo.package);
     } catch (error) {
       return error.message;
