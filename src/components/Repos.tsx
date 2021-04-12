@@ -28,7 +28,7 @@ const Repos: React.FC = () => {
 
   return (
     <div className="mt-12">
-      <h1 className="text-2xl text-4xl font-bold mb-5">
+      <h1 className=" text-4xl font-bold mb-5">
         Search an npm registry package
       </h1>
       <div className="text-2xl mb-5">
@@ -39,7 +39,10 @@ const Repos: React.FC = () => {
             name="search_term"
             ref={register}
           />
-          <button type="submit" className="bg-blue-600 text-white rounded p-1">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white rounded py-0.5 px-5"
+          >
             Search
           </button>
         </form>
