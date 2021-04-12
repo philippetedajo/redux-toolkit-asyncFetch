@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import algoliasearch from "algoliasearch";
 import { RootState } from "../store";
 import axios from "axios";
 
@@ -17,22 +18,72 @@ const initialState: ReposState = {
 export const getRepos = createAsyncThunk(
   "repos/getRepos",
   async (term: string) => {
-    try {
-      const { data } = await axios.get(
-        "http://registry.npmjs.org/-/v1/search",
-        {
-          params: {
-            text: term,
-          },
-        }
-      );
-      // console.log(data.objects.map((repo: any) => repo.package));
-      return data.objects.map((repo: any) => repo.package);
-    } catch (error) {
-      return error.message;
-    }
+    await axios
+      .get("http://registry.npmjs.org/-/v1/search", {
+        params: {
+          text: term,
+        },
+      })
+      .then((response) => {
+        const data = response.data.objects.map((repo: any) => repo.package);
+        return dataToAlgoliaObject(data);
+      })
+      .then(async (response) => {
+        await sendDataToAlgolia(response);
+        return;
+      })
+      .then(async () => {
+        await configureAlgoliaIndex();
+        return;
+      })
+      .catch(function (error) {
+        console.warn(error);
+      });
   }
 );
+
+//============================== algolia utils functions
+function dataToAlgoliaObject(data_points: any) {
+  var algoliaObjects = [];
+  for (var i = 0; i < data_points.length; i++) {
+    var data_point = data_points[i];
+    var algoliaObject = {
+      objectID: data_point.date,
+      name: data_point.name,
+    };
+    algoliaObjects.push(algoliaObject);
+  }
+
+  return algoliaObjects;
+}
+
+const algoliaClient = algoliasearch(
+  "EEYQ27VWH1",
+  "2bd847ba6b65ccb8ddb6e82627daa3d2"
+);
+const algoliaIndex = algoliaClient.initIndex("codetree-npm");
+
+function sendDataToAlgolia(algoliaObjects: any) {
+  console.log(algoliaObjects);
+  algoliaIndex
+    .saveObjects(algoliaObjects)
+    .then(({ objectIDs }) => {
+      console.log(objectIDs);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+async function configureAlgoliaIndex() {
+  algoliaIndex.setSettings({
+    searchableAttributes: ["name"],
+    attributesToHighlight: ["name"],
+    customRanking: ["desc(rating)"],
+    attributesToRetrieve: ["name"],
+  });
+}
+//============================== //
 
 export const reposSlice = createSlice({
   name: "repos",

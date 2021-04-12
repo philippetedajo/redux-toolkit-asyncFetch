@@ -20,9 +20,9 @@ const Repos: React.FC = () => {
     dispatch(getRepos(search_term));
   };
 
-  const list = data.map((repo: any, index: number) => (
-    <li key={index}>{repo.name} </li>
-  ));
+  // const list = data.map((repo: any, index: number) => (
+  //   <li key={index}>{repo.name} </li>
+  // ));
 
   return (
     <div className="border-2 h-screen flex justify-center">
@@ -48,9 +48,9 @@ const Repos: React.FC = () => {
           )}
         </div>
 
-        {loading && <div>Loading...</div>}
-        {data && <div> {list} </div>}
-        {error && console.log(error)}
+        {/*{loading && <div>Loading...</div>}*/}
+        {/*{data && <div> {list} </div>}*/}
+        {/*{error && console.log(error)}*/}
       </div>
     </div>
   );
