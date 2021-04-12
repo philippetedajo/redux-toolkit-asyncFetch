@@ -3,7 +3,7 @@ import Repos from "./components/Repos";
 
 function App() {
   return (
-    <div className="App">
+    <div className="h-screen flex justify-center">
       <Repos />
     </div>
   );
